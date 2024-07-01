@@ -6,8 +6,6 @@ Este projeto faz parte da disciplina de Redes 2 e tem como objetivo a criação 
 
 ## Funcionalidades
 
-## Funcionalidades
-
 - **Conexão TCP**: Gerencia conexões persistentes e confiáveis entre clientes e o servidor.
 - **Conexão UDP**: Suporta comunicação não confiável e sem conexão, útil para transmissões rápidas.
 - **Mensagens em tempo real**: Permite a troca de mensagens instantâneas entre clientes conectados.
