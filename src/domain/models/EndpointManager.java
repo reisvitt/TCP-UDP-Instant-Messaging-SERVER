@@ -13,7 +13,7 @@ public class EndpointManager {
   }
 
   public void unsubscribe(EndpointListener endpoint) {
-    this.endpoints.add(endpoint);
+    this.endpoints.remove(endpoint);
   }
 
   public void execute(Server server, Client client, String data) {
