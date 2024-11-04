@@ -42,7 +42,7 @@ public class Manager {
 
   public void execute(Server server, Client client, String data) {
     data = data.trim();
-    System.out.println("DATA:" + data + "!");
+    System.out.println("DATA:" + data);
     this.endpointsManager.execute(server, client, data);
   }
 

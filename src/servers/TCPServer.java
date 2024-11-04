@@ -1,6 +1,10 @@
 package src.servers;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.OutputStream;
 
 /*=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
  Autor.....: Vitor Reis
@@ -69,30 +73,43 @@ public class TCPServer extends Thread implements Server {
   @Override
   public void send(Client client, String data) {
     Socket socket = client.getSocket();
-    if (socket.isConnected() && !socket.isClosed()) {
-      System.out.println("Sending " + data + " to " + client.getIp());
+    if (socket == null) {
+      System.out.println("Socket of client " + client.getIp() + " is null.");
+      return;
+    }
+    if (socket.isConnected()) {
+      System.out.println("(TCP) Sending " + data + " to " + client.getIp());
 
       try {
-        client.getOutputStream().writeObject(data);
-        client.getOutputStream().flush();
+        OutputStream output = socket.getOutputStream();
+        ObjectOutputStream oos = new ObjectOutputStream(output);
+        oos.writeUTF(data);
+        oos.flush();
       } catch (IOException e) {
-        System.out.println("Failure sending to " + client.getIp());
+        System.out.println("(TCP) Failure sending to " + client.getIp());
         e.printStackTrace();
       }
+    } else {
+      System.out.println("(TCP) Socket of client " + client.getIp() + " is not connected.");
+      client.close();
     }
   }
 
   public void receive(Socket connection) throws IOException {
     Client client = new Client(connection);
-    try {
-      while (true) {
-        String in = (String) client.getInputStream().readObject();
-        System.out.println("Received from client: " + client.getIp() + " data: " + in);
+    while (client.isConnected()) {
+      try {
+        InputStream is = connection.getInputStream();
+
+        ObjectInputStream oip = new ObjectInputStream(is);
+        String in = oip.readUTF();
+
+        System.out.println("(TCP) Received from client: " + client.getIp() + " data: " + in);
         this.manager.execute(this, client, in);
+      } catch (Exception e) {
+        this.manager.execute(this, client, "LEAVE ALL GROUPS");
+        client.close();
       }
-    } catch (Exception e) {
-      this.manager.execute(this, client, "LEAVE ALL GROUPS");
-      client.close();
     }
   }
 
