@@ -53,7 +53,7 @@ public class UDPServer extends Thread implements Server {
       try {
         this.socket.receive(receivedPacket);
 
-        System.out.println("Client: " + receivedPacket.getAddress() + " (UDP) connected.");
+        System.out.println("Client: " + receivedPacket.getAddress() + " (UDP) packet.");
 
         new Thread(() -> {
           try {
@@ -73,7 +73,7 @@ public class UDPServer extends Thread implements Server {
     byte[] byteData = data.getBytes();
     int port = 6790;
 
-    System.out.println("Sending " + data + " to " + client.getIp() + " Port: " + port);
+    System.out.println("(UDP) Sending " + data + " to " + client.getIp() + " Port: " + port);
 
     try {
       InetAddress address = InetAddress.getByName(client.getIp());
@@ -89,7 +89,7 @@ public class UDPServer extends Thread implements Server {
     Client client = new Client(connection);
 
     String in = new String(connection.getData());
-    System.out.println("Received from client: " + client.getIp() + " data: " + in);
+    System.out.println("(UDP) Received from client: " + client.getIp() + " data: " + in);
     this.manager.execute(this, client, in);
   }
 
@@ -99,7 +99,12 @@ public class UDPServer extends Thread implements Server {
 
   @Override
   public String getIp() {
-    return this.socket.getInetAddress().getHostAddress();
+    InetAddress address = this.socket.getInetAddress();
+    if (address != null) {
+      return this.socket.getInetAddress().getHostAddress();
+    }
+
+    return "0.0.0.0";
   }
 
   @Override
